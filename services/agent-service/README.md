@@ -6,7 +6,7 @@ Search agent. LangGraph로 조건 추출(①), 검색/색출(②), 추천(③), 
 |---|---|
 | 언어 | Python |
 | 담당 | CODEOWNERS 참고 |
-| 계약 | `api/openapi.yaml` |
+| 계약 | `api/openapi.yaml` (앱·확장용 API), `api/actions.schema.json` (실행기에 보내는 액션) |
 | 포트 | TBD |
 | 의존 서비스 | TBD |
 | 환경변수 | TBD |

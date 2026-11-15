@@ -11,5 +11,5 @@
 4. 안전장치는 CI의 스펙 diff 검사만 둔다. 호출자 리뷰는 강제하지 않는다.
 5. 브랜치: feature → develop(squash) → main(merge commit, 시연 태그).
 6. CI: GitHub Actions가 바뀐 서비스만 검사한다. Jenkins는 main 시연 배포만 맡는다.
-7. Playwright 워커는 독립 서비스(browser-worker)로, 로컬과 ECS에서 같은 계약으로 실행한다.
+7. ~~Playwright 워커는 독립 서비스(browser-worker)로, 로컬과 ECS에서 같은 계약으로 실행한다.~~ ADR 0002로 대체: 확장이 기본 실행기, browser-worker는 보조.
 8. 앱·서버가 죽으면 워커도 세션 단위로 같이 종료된다(lease + heartbeat + 펜싱 토큰).

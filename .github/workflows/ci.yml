@@ -11,6 +11,7 @@ jobs:
       python: ${{ steps.pyfilter.outputs.changes }}
       java: ${{ steps.javafilter.outputs.changes }}
       contracts: ${{ steps.contracts.outputs.contracts }}
+      extension: ${{ steps.extension.outputs.extension }}
     steps:
       - uses: actions/checkout@v4
       - id: pyfilter
@@ -28,6 +29,11 @@ jobs:
             control-service: [services/control-service/**, libs/java-web/**]
             payment-service: [services/payment-service/**, services/fep/fep-contracts/**, libs/java-web/**]
             fep: [services/fep/**, libs/java-web/**]
+      - id: extension
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            extension: ['apps/hanki-extension/**']
       - id: contracts
         uses: dorny/paths-filter@v3
         with:
@@ -77,6 +83,28 @@ jobs:
           modules=$(find "$dir" -name pom.xml -not -path '*/target/*' -exec dirname {} \; | paste -sd, -)
           mvn -B -pl "$modules" -am verify
 
+  extension:
+    needs: changes
+    if: needs.changes.outputs.extension == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/hanki-extension
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate manifest
+        run: python3 -c "import json; m=json.load(open('public/manifest.json')); assert m['manifest_version'] == 3 and m['key']"
+      - uses: actions/setup-node@v4
+        if: hashFiles('apps/hanki-extension/package.json') != ''
+        with:
+          node-version: '22'
+      - name: Build and test
+        if: hashFiles('apps/hanki-extension/package.json') != ''
+        run: |
+          npm ci
+          npm run build
+          npm test --if-present
+
   contracts:
     needs: changes
     if: needs.changes.outputs.contracts == 'true'
@@ -94,7 +122,7 @@ jobs:
   # 건너뛴 job은 통과로, 실패하거나 취소된 job은 실패로 본다.
   ci-gate:
     if: always()
-    needs: [changes, python, java, contracts]
+    needs: [changes, python, java, extension, contracts]
     runs-on: ubuntu-latest
     steps:
       - name: Check results

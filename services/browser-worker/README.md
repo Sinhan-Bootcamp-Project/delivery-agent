@@ -1,21 +1,19 @@
 # browser-worker
 
-Playwright 워커. 요기요 웹에서 click/type/snapshot 액션을 수행한다. 로컬 PC와 ECS 양쪽에서 같은 계약으로 실행한다.
+Playwright 워커. **보조 실행기**다. 기본 실행기는 `apps/hanki-extension`(chrome.debugger)이다.
+
+용도:
+- CI·E2E 테스트에서 확장 없이 액션 루프를 돌릴 때
+- 시연 백업 (Mac headed Chromium에서 동작 확인됨. headless는 Akamai 403)
 
 | 항목 | 값 |
 |---|---|
 | 언어 | Python |
 | 담당 | CODEOWNERS 참고 |
-| 계약 | `api/actions.schema.json` |
+| 계약 | `services/agent-service/api/actions.schema.json`을 구현한다 (확장과 같은 계약) |
 | 포트 | TBD |
-| 의존 서비스 | TBD |
-| 환경변수 | TBD |
 
-## 실행
+## 생명주기
 
-TBD
-
-## 규칙
-
-- 다른 서비스의 `src/`를 import하지 않는다. 다른 서비스는 그 서비스의 `api/` 계약으로만 부른다.
-- `api/` 변경은 이 서비스 담당자가 관리한다. 깨지는 변경은 CI가 막는다.
+부모(agent-service 또는 로컬 실행기) 프로세스의 자식으로 띄우고, stdin 파이프가 EOF가 되면 즉시 종료한다.
+모든 액션의 `session_id`, `lease_epoch`를 검사하고 lease가 끊기면 브라우저를 닫는다.

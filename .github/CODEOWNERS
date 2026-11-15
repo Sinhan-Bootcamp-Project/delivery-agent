@@ -3,7 +3,7 @@
 *                                   @DongJuS
 /services/payment-service/          @DongJuS
 /services/fep/                      @DongJuS
-# /apps/hanki-app/                  @TBD
+# /apps/hanki-extension/            @TBD
 # /services/agent-service/          @TBD
 # /services/browser-worker/         @TBD
 # /services/ai-router/              @TBD

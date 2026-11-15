@@ -5,10 +5,10 @@
 ## 구조
 
 ```text
-apps/hanki-app/            한끼 앱 + hanki-agent SDK
+apps/hanki-extension/      한끼 크롬 확장 (UI + SDK + 요기요 조작, chrome.debugger)
 services/
   agent-service/           Search agent (Python, LangGraph)
-  browser-worker/          Playwright 워커 (Python, 로컬/ECS 겸용)
+  browser-worker/          Playwright 워커 (Python, 보조 실행기: E2E·시연 백업)
   ai-router/               AI 추론 라우터 (Python)
   calculation-service/     혜택 해석 (Java)
   control-service/         스냅샷 해시 · 승인 토큰 (Java)
