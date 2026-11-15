@@ -1,0 +1,11 @@
+# 서비스 1개당 주 담당 1명. api/도 그 담당자가 소유한다.
+# 팀원이 정해지면 @TBD 줄을 채운다. (존재하지 않는 계정은 GitHub가 무시한다)
+*                                   @DongJuS
+/services/payment-service/          @DongJuS
+/services/fep/                      @DongJuS
+# /apps/hanki-app/                  @TBD
+# /services/agent-service/          @TBD
+# /services/browser-worker/         @TBD
+# /services/ai-router/              @TBD
+# /services/calculation-service/    @TBD
+# /services/control-service/        @TBD
