@@ -1,6 +1,6 @@
 # payment-service
 
-모의결제 원장·환불(⑤). PGSystem PR #1에서 이식한다.
+모의결제 원장·환불(⑤). PGSystem PR #1에서 이식했다. 레거시 platform-contracts 중 쓰던 모델은 `shared/contract`로 흡수했다. 설계는 [docs/payment-core.md](../../docs/payment-core.md) 참고.
 
 | 항목 | 값 |
 |---|---|

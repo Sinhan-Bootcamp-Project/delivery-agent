@@ -1,0 +1,41 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: institution-simulator
+  flyway:
+    enabled: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+# 기관마다 DB 계정·스키마가 다르다. 계정은 자기 스키마 외 권한이 없다(infra/postgres/init.sh).
+institution:
+  card:
+    url: ${CARD_DB_URL:jdbc:postgresql://postgres:5432/food?currentSchema=inst_card}
+    username: inst_card_app
+    password: ${INST_CARD_DB_PASSWORD:inst_card_dev_only}
+    schema: inst_card
+  bank:
+    url: ${BANK_DB_URL:jdbc:postgresql://postgres:5432/food?currentSchema=inst_bank}
+    username: inst_bank_app
+    password: ${INST_BANK_DB_PASSWORD:inst_bank_dev_only}
+    schema: inst_bank
+  kftc:
+    url: ${KFTC_DB_URL:jdbc:postgresql://postgres:5432/food?currentSchema=inst_kftc}
+    username: inst_kftc_app
+    password: ${INST_KFTC_DB_PASSWORD:inst_kftc_dev_only}
+    schema: inst_kftc
+  bok:
+    url: ${BOK_DB_URL:jdbc:postgresql://postgres:5432/food?currentSchema=inst_bok}
+    username: inst_bok_app
+    password: ${INST_BOK_DB_PASSWORD:inst_bok_dev_only}
+    schema: inst_bok
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+logging:
+  structured:
+    format:
+      console: logstash
