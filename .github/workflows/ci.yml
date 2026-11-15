@@ -86,7 +86,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install oasdiff
-        run: curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
+        run: curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | version=1.11.7 sh
       - name: Check breaking changes
         run: bash scripts/check-contracts.sh "origin/${{ github.base_ref }}"
 
