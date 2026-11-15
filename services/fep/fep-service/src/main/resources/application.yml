@@ -1,0 +1,35 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: fep-service
+  datasource:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+    url: ${DB_URL:jdbc:postgresql://postgres:5432/food?currentSchema=fep}
+    username: ${DB_USER:fep_app}
+    password: ${DB_PASSWORD:fep_dev_only}
+  flyway:
+    default-schema: fep
+    schemas: fep
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+fep:
+  # 기관 응답 대기 상한(FEP-03). 초과하면 재전송 없이 9100(TIMEOUT)을 돌려준다.
+  institution-timeout: ${FEP_INSTITUTION_TIMEOUT:3s}
+  routes:
+    card: ${ROUTE_CARD:http://institution-simulator:8080}
+    bank: ${ROUTE_BANK:http://institution-simulator:8080}
+    kftc: ${ROUTE_KFTC:http://institution-simulator:8080}
+    bok: ${ROUTE_BOK:http://institution-simulator:8080}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+logging:
+  structured:
+    format:
+      console: logstash
