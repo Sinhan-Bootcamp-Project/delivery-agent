@@ -10,6 +10,22 @@
 - 사용자 본인 로그인 세션과 가정용 IP로 동작하므로 서버 headless에서 생기는 Akamai 403을 피한다
 - 주문·결제 버튼은 클릭하지 않는다. 장바구니까지만 진행한다
 
+## 폴더
+
+```text
+src/
+├─ background/      # MV3 service worker. chrome.debugger는 여기서만 호출
+│  ├─ cdp/          # CDP 래퍼 (a11y 트리, 클릭·입력)
+│  ├─ agent-link/   # agent-service WebSocket, heartbeat
+│  └─ guard/        # lease 검사, 주문·결제 클릭 차단
+├─ sidepanel/       # UI (프롬프트, 추천, 승인 카드)
+├─ content/         # (선택) 페이지 안 표시만
+└─ shared/          # background↔sidepanel 메시지 타입
+public/manifest.json
+```
+
+판단(무엇을 누를지)은 agent-service, 실행과 안전 검사는 확장이 맡는다.
+
 ## 설치 (스토어 등록 없음)
 
 1. 빌드해서 `dist/`를 만든다 (빌드 도구는 TBD)
