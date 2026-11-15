@@ -1,0 +1,16 @@
+# build
+target/
+build/
+dist/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+node_modules/
+# local
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+.DS_Store

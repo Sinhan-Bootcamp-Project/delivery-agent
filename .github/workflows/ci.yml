@@ -1,0 +1,132 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.pyfilter.outputs.changes }}
+      java: ${{ steps.javafilter.outputs.changes }}
+      contracts: ${{ steps.contracts.outputs.contracts }}
+      extension: ${{ steps.extension.outputs.extension }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: pyfilter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            agent-service: [services/agent-service/**, libs/py-common/**]
+            browser-worker: [services/browser-worker/**, libs/py-common/**]
+            ai-router: [services/ai-router/**, libs/py-common/**]
+      - id: javafilter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            calculation-service: [services/calculation-service/**, libs/java-web/**]
+            control-service: [services/control-service/**, libs/java-web/**]
+            payment-service: [services/payment-service/**, services/fep/fep-contracts/**, libs/java-web/**]
+            fep: [services/fep/**, libs/java-web/**]
+      - id: extension
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            extension: ['apps/hanki-extension/**']
+      - id: contracts
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            contracts: ['services/**/api/**']
+
+  python:
+    needs: changes
+    if: needs.changes.outputs.python != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJSON(needs.changes.outputs.python) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test ${{ matrix.service }}
+        working-directory: services/${{ matrix.service }}
+        run: |
+          if [ ! -f requirements.txt ]; then echo "No code yet"; exit 0; fi
+          pip install -r requirements.txt pytest ruff
+          ruff check .
+          pytest tests
+
+  java:
+    needs: changes
+    if: needs.changes.outputs.java != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJSON(needs.changes.outputs.java) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Verify ${{ matrix.service }}
+        run: |
+          dir="services/${{ matrix.service }}"
+          if ! find "$dir" -name pom.xml | grep -q .; then echo "No code yet"; exit 0; fi
+          modules=$(find "$dir" -name pom.xml -not -path '*/target/*' -exec dirname {} \; | paste -sd, -)
+          mvn -B -pl "$modules" -am verify
+
+  extension:
+    needs: changes
+    if: needs.changes.outputs.extension == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/hanki-extension
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate manifest
+        run: python3 -c "import json; m=json.load(open('public/manifest.json')); assert m['manifest_version'] == 3 and m['key']"
+      - uses: actions/setup-node@v4
+        if: hashFiles('apps/hanki-extension/package.json') != ''
+        with:
+          node-version: '22'
+      - name: Build and test
+        if: hashFiles('apps/hanki-extension/package.json') != ''
+        run: |
+          npm ci
+          npm run build
+          npm test --if-present
+
+  contracts:
+    needs: changes
+    if: needs.changes.outputs.contracts == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install oasdiff
+        run: curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | version=1.11.7 sh
+      - name: Check breaking changes
+        run: bash scripts/check-contracts.sh "origin/${{ github.base_ref }}"
+
+  # 브랜치 보호의 필수 검사는 이 job 하나만 건다.
+  # 건너뛴 job은 통과로, 실패하거나 취소된 job은 실패로 본다.
+  ci-gate:
+    if: always()
+    needs: [changes, python, java, extension, contracts]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check results
+        run: |
+          results='${{ toJSON(needs.*.result) }}'
+          echo "$results"
+          if echo "$results" | grep -Eq '"(failure|cancelled)"'; then exit 1; fi

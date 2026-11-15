@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "한끼",
+  "version": "0.1.0",
+  "description": "요기요 메뉴 추천과 장바구니 담기 에이전트",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzyCdpUYe8jfN+OuB6topA4ocBsv0JcNnKqp0SRSA3WbDJY2l0odd7wINP2YqH3nXDsHtpUEYdqyWV0pbfx4gldqGCYRR8Z8OZLDV5RRzr68i6v4ZjLxNqZN/GPnVWIp4i2pbjJio8EZLJMnKFHOCp2L9AekYeRSPobLRPtSFVyqC04ZAzeTX/PZV5t/sC/jOCQXzu6jLLm2aO5czDVSEwefzHOyvvn5OsADtuRlAbORzFTuDMTryUhz9Lsb8krPU9sLg0SUA/vIl4tcL8WSef8EUCNiWFdG0BdMllYlnPz+4aw2lzOH+1vluCnR3DhZyue/Df/QtNKjWyfgsU6Vb7wIDAQAB",
+  "permissions": [
+    "debugger",
+    "sidePanel",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.yogiyo.co.kr/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "한끼"
+  }
+}

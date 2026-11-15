@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent-service/actions",
+  "title": "executor action",
+  "description": "agent-service가 실행기(hanki-extension 또는 browser-worker)에 보내는 액션. 모든 액션은 session_id와 lease_epoch를 가진다.",
+  "type": "object",
+  "required": ["session_id", "lease_epoch", "type"],
+  "properties": {
+    "session_id": {"type": "string"},
+    "lease_epoch": {"type": "integer", "minimum": 0},
+    "type": {"enum": ["snapshot", "click", "type", "heartbeat", "close"]}
+  }
+}
